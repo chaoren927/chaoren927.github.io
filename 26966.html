@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>Django其他技术 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Django其他技术</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 25, 2016&nbsp;&nbsp;18:00:45</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/wep/">wep</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="一-静态文件"><a href="#一-静态文件" class="headerlink" title="一.静态文件"></a>一.静态文件</h1><h2 id="2-使用"><a href="#2-使用" class="headerlink" title="2.使用"></a>2.使用</h2><p>在Django 如果要使用静态文件需要建立一个静态文件夹。</p>
+<h1 id="二-中间件"><a href="#二-中间件" class="headerlink" title="二.中间件"></a>二.中间件</h1><p><strong>中间件函数是Django框架给我们预留的函数接口，让我们可以干预请求和应答过程。</strong></p>
+<h2 id="1-获取浏览器端的IP地址"><a href="#1-获取浏览器端的IP地址" class="headerlink" title="1.获取浏览器端的IP地址"></a>1.获取浏览器端的IP地址</h2><p>使用request对象META属性：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip = request.META[<span class="string">'REMOTE_ADDR'</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取访问者IP"><a href="#获取访问者IP" class="headerlink" title="获取访问者IP"></a>获取访问者IP</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></span><br><span class="line">    <span class="string">'''首页'''</span></span><br><span class="line">    <span class="comment">#获取浏览器端的ip地址</span></span><br><span class="line">    user_ip request.META[<span class="string">'REMOTE_ADDR'</span>]</span><br><span class="line">    print(user_ip)</span><br><span class="line">    <span class="keyword">return</span> render(request, <span class="string">'booktest/index.html'</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="阻止某IP访问"><a href="#阻止某IP访问" class="headerlink" title="阻止某IP访问"></a>阻止某IP访问</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">EXCLUDE_IPS = [<span class="string">'172.16.19.26'</span>]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></span><br><span class="line">    <span class="string">'''首页'''</span></span><br><span class="line">    <span class="comment">#获取浏览器端的ip地址</span></span><br><span class="line">    user_ip request.META[<span class="string">'REMOTE_ADDR'</span>]</span><br><span class="line">    <span class="keyword">if</span> user_ip <span class="keyword">in</span> EXCLUDE_IPS:</span><br><span class="line">        <span class="keyword">return</span> HttpResponse(<span class="string">'禁止访问'</span>)</span><br><span class="line">    print(user_ip)</span><br><span class="line">    <span class="keyword">return</span> render(request, <span class="string">'booktest/index.html'</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="阻止IP访问装饰器"><a href="#阻止IP访问装饰器" class="headerlink" title="阻止IP访问装饰器"></a>阻止IP访问装饰器</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.conf <span class="keyword">import</span> settings</span><br><span class="line"></span><br><span class="line">EXCLUDE_IPS = [<span class="string">'172.16.19.26'</span>]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">blocked_ips</span><span class="params">(view_func)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(request, **view_args, **view_kwargs)</span>:</span></span><br><span class="line">        user_ip request.META[<span class="string">'REMOTE_ADDR'</span>]</span><br><span class="line">    	<span class="keyword">if</span> user_ip <span class="keyword">in</span> EXCLUDE_IPS:</span><br><span class="line">        	<span class="keyword">return</span> HttpResponse(<span class="string">'禁止访问'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> view_func(request, *views_args, **view_kwargs)</span><br><span class="line">    <span class="keyword">return</span> wrapper</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-使用中间件"><a href="#2-使用中间件" class="headerlink" title="2.使用中间件"></a>2.使用中间件</h2><p>中间件是每个函数调用之前自动会执行的。</p>
+<ol>
+<li><p>新建一个middleware.py文件。 </p>
+<ul>
+<li><p>app文件下创建这个文件。</p>
+</li>
+<li><p>名字可以改变但是一般都叫做这middleware</p>
+</li>
+</ul>
+</li>
+<li><p>打开middleware.py 创建中间件函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> HttpResponse</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BlockedIPSMiddleware</span><span class="params">(object)</span>:</span>  <span class="comment">#中间件类</span></span><br><span class="line">    EXCLUDE_IPS = [<span class="string">'172.16.19.26'</span>]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_view</span><span class="params">(self,request, view_func , *view_args, **view_kwargs)</span>:</span>   <span class="comment">#中间件函数</span></span><br><span class="line">        <span class="string">'''视图函数调用之前会调用'''</span></span><br><span class="line">        user_ip request.META[<span class="string">'REMOTE_ADDR'</span>]</span><br><span class="line">            <span class="keyword">if</span> user_ip <span class="keyword">in</span> BlockedIPSMiddleware.EXCLUDE_IPS:</span><br><span class="line">                <span class="keyword">return</span> HttpResponse(<span class="string">'禁止访问'</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在setting 的 MIDDLEWARE 里面注册中间件类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MIDDLEWARE = [</span><br><span class="line">    <span class="string">'django.middleware.security.SecurityMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.contrib.sessions.middleware.SessionMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.middleware.common.CommonMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.middleware.csrf.CsrfViewMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.contrib.auth.middleware.AuthenticationMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.contrib.messages.middleware.MessageMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.middleware.clickjacking.XFrameOptionsMiddleware'</span>,</span><br><span class="line">    <span class="string">'booktest.middleware.BlockedIPSMiddleware'</span>,       <span class="comment">#注册中间件类</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="在类中定义中间件预留函数"><a href="#在类中定义中间件预留函数" class="headerlink" title="在类中定义中间件预留函数"></a>在类中定义中间件预留函数</h3>   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__init__:服务器响应第一个请求的时候调用。</span><br><span class="line">process_request:是在产生request对象，进行url匹配之前调用。</span><br><span class="line">process_view：是在url匹配之后，调用视图函数之前。</span><br><span class="line">process_response：视图函数调用之后，内容返回给浏览器之前。</span><br><span class="line">process_exception:视图函数出现异常，会调用这个函数。</span><br><span class="line">如果注册多个中间件包含process_exception函数的时候，调用的顺序跟注册的顺序相反的。</span><br></pre></td></tr></table></figure>
+
+<p>   <img src="/images/Django%E4%B8%AD%E9%97%B4%E4%BB%B6.png" alt></p>
+<h3 id="中间件函数执行过程、"><a href="#中间件函数执行过程、" class="headerlink" title="中间件函数执行过程、"></a>中间件函数执行过程、</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestMiddleware</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="string">'''中间件类'''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">'''服务器重启之后，接收第一个请求时调用'''</span></span><br><span class="line">        print(<span class="string">'----init------'</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_request</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">'''产生request对象之后，url匹配之前调用'''</span></span><br><span class="line">        print(<span class="string">'----process_request------'</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_view</span><span class="params">(self,qequest, view_func, *view_args, **view_kwargs)</span>:</span></span><br><span class="line">        <span class="string">'''url匹配之后，视图函数调用之前调用'''</span></span><br><span class="line">        print(<span class="string">'----process_view------'</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_response</span><span class="params">(self,qequest, response)</span>:</span></span><br><span class="line">        <span class="string">'''url匹配之后，视图函数调用之前调用'''</span></span><br><span class="line">        print(<span class="string">'----process_response------'</span>)</span><br><span class="line">        <span class="keyword">return</span> response</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExceptionTestMiddleware</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_exption</span><span class="params">(self, request ,exception)</span>:</span></span><br><span class="line">        <span class="string">'''视图函数发生异常时候调用'''</span></span><br><span class="line">        print(<span class="string">'----process_exportion------'</span>)</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/26966.html">http://yoursite.com/26966.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Django/"># Django</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/57999.html">Django jinja2模板</a>
+            
+            
+            <a class="next" rel="next" href="/18935.html">Django分页</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>

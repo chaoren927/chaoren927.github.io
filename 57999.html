@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>Django jinja2模板 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Django jinja2模板</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 1, 2016&nbsp;&nbsp;20:20:21</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/wep/">wep</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h1><h2 id="Jinja2模板的中文文档"><a href="#Jinja2模板的中文文档" class="headerlink" title="Jinja2模板的中文文档"></a>Jinja2模板的中文文档</h2><!-- <http://docs.jinkan.org/docs/jinja2/> -->
+
+<h2 id="Jinja2模板的使用语法"><a href="#Jinja2模板的使用语法" class="headerlink" title="Jinja2模板的使用语法"></a>Jinja2模板的使用语法</h2><h3 id="变量表示"><a href="#变量表示" class="headerlink" title="- 变量表示"></a>- 变量表示</h3><ul>
+<li>应用把变量传递到模板，你可能在模板中弄混。变量上面也可以有你能访问的属性或元 素。变量看起来是什么，完全取决于应用提供了什么。</li>
+<li>你可以使用点（ <code>.</code> ）来访问变量的属性，作为替代，也可以使用所谓的“下标”语 法（ <code>[]</code>）。下面的几行效果是一样的:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; foo.bar &#125;&#125;             </span><br><span class="line">&#123;&#123; foo[&apos;bar&apos;] &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>知晓花括号 <em>不是</em> 变量的一部分，而是打印语句的一部分是重要的。如果你访问标签 里的不带括号的变量。</li>
+<li>如果变量或属性不存在，会返回一个未定义值。你可以对这类值做什么取决于应用的配 置，默认的行为是它如果被打印，其求值为一个空字符串，并且你可以迭代它，但其它 操作会失败。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">实现</span><br><span class="line">为方便起见，Jinja2 中 foo.bar 在 Python 层中做下面的事情:</span><br><span class="line"></span><br><span class="line">- 检查 foo 上是否有一个名为 bar 的属性。</span><br><span class="line">- 如果没有，检查 foo 中是否有一个 &apos;bar&apos; 项 。</span><br><span class="line">- 如果没有，返回一个未定义对象。</span><br><span class="line">foo[&apos;bar&apos;] 的方式相反，只在顺序上有细小差异:</span><br><span class="line"></span><br><span class="line">- 检查在 foo 中是否有一个 &apos;bar&apos; 项。</span><br><span class="line">- 如果没有，检查 foo 上是否有一个名为 bar 的属性。</span><br><span class="line">- 如果没有，返回一个未定义对象。</span><br><span class="line">如果一个对象有同名的项和属性，这很重要。此外，有一个 attr() 过滤 器，它只查找属性。</span><br></pre></td></tr></table></figure>
+
+<h3 id="赋值操作"><a href="#赋值操作" class="headerlink" title="- 赋值操作"></a>- 赋值操作</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="if判断"><a href="#if判断" class="headerlink" title="- if判断"></a>- if判断</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="for循环"><a href="#for循环" class="headerlink" title="- for循环"></a>- for循环</h3><ul>
+<li>遍历列表中的每一个选项。例如，要显示一个由 users` 变量提供的用户列表:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt;Members&lt;/h1&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&#123;% for user in users %&#125;</span><br><span class="line">  &lt;li&gt;&#123;&#123; user.username|e &#125;&#125;&lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>因为模板中的变量保留它们的对象属性，可以迭代像 dict 的容器:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dl&gt;</span><br><span class="line">&#123;% for key, value in my_dict.iteritems() %&#125;</span><br><span class="line">    &lt;dt&gt;&#123;&#123; key|e &#125;&#125;&lt;/dt&gt;</span><br><span class="line">    &lt;dd&gt;&#123;&#123; value|e &#125;&#125;&lt;/dd&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line">&lt;/dl&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注意无论如何字典通常是无序的，所以你可能需要把它作为一个已排序的列表传入 到模板或使用 dictsort 过滤器。</li>
+<li>在一个 for 循环块中你可以访问这些特殊的变量:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>loop.index</td>
+<td>当循环迭代的次数（从1开始）</td>
+</tr>
+<tr>
+<td>loop.index0</td>
+<td>当循环迭代的次数(从0开始)</td>
+</tr>
+<tr>
+<td>loop.revindex</td>
+<td>到循环结束需要迭代的次数（从1开始）</td>
+</tr>
+<tr>
+<td>loop.revindex0</td>
+<td>到循环结束需要迭代的次数（从0开始）</td>
+</tr>
+<tr>
+<td>loop.first</td>
+<td>如果第一次迭代，为True</td>
+</tr>
+<tr>
+<td>loop.lost</td>
+<td>如果最后一次迭代，为True</td>
+</tr>
+<tr>
+<td>loop.length</td>
+<td>序列中的项目数</td>
+</tr>
+<tr>
+<td>loop.cycle</td>
+<td>在一串序列间期取值的辅助函数。见下面的解释</td>
+</tr>
+</tbody></table>
+<ul>
+<li>在 for 循环中，可以使用特殊的 loop.cycle 辅助函数，伴随循环在一个字符串/变 量列表中周期取值:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;% for row in rows %&#125;</span><br><span class="line">    &lt;li class=&quot;&#123;&#123; loop.cycle(&apos;odd&apos;, &apos;even&apos;) &#125;&#125;&quot;&gt;&#123;&#123; row &#125;&#125;&lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="定义测试函数"><a href="#定义测试函数" class="headerlink" title="- 定义测试函数"></a>- 定义测试函数</h3><h3 id="块block"><a href="#块block" class="headerlink" title="- 块block"></a>- 块block</h3><h3 id="包含页"><a href="#包含页" class="headerlink" title="- 包含页"></a>- 包含页</h3><h3 id="宏macro"><a href="#宏macro" class="headerlink" title="- 宏macro"></a>- 宏macro</h3>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/57999.html">http://yoursite.com/57999.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Django/"># Django</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/46358.html">Django上传图片</a>
+            
+            
+            <a class="next" rel="next" href="/26966.html">Django其他技术</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>

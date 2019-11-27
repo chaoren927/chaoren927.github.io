@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>Vue基于vue-quill-editor富文本编辑器使用心得 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vue基于vue-quill-editor富文本编辑器使用心得</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 8, 2018&nbsp;&nbsp;20:30:22</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/VUE/">VUE</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>Vue基于vue-quill-editor富文本编辑器使用心得<br>vue-quill-editor的guthub地址，现在市面上有很多的富文本编辑器，我个人还是非常推荐Vue自己家的vue-quill-deitor，虽然说只支持IE10+,但这种问题，甩给别人吧！</p>
+<p>那么我们直击正题，在vue中使用quill呢，我们需要npm进行安装，安装命令如下：</p>
+<p>npm install vue-quill-editor<br>再安装依赖项</p>
+<p>npm install quill<br>使用:</p>
+<p>在main.js中进行引入</p>
+<p>import Vue from ‘vue’<br>import VueQuillEditor from ‘vue-quill-editor’<br>import ‘quill/dist/quill.core.css’<br>import ‘quill/dist/quill.snow.css’<br>import ‘quill/dist/quill.bubble.css’</p>
+<p>Vue.use(VueQuillEditor)</p>
+<p>下面的css一定还要引用，否则编辑器将会没有css。</p>
+<p>在vue页面中代码如下：</p>
+<p>其中的v-model就是我们自己的html代码，你可以将这个html直接放到数据库，这样也就没有什么问题了。如果想要禁用编辑器可以通过以下代码：</p>
+<p>onEditorFocus(val,editor){ // 富文本获得焦点时的事件<br>console.log(val); // 富文本获得焦点时的内容<br>editor.enable(false); // 在获取焦点的时候禁用<br>}<br>主题设置</p>
+<p>在vue项目中，具体引入Quill的文件中，需要使用哪种主题就写哪个。默认是snow主题的。</p>
+<p>复制代码<br>data(){<br>return {<br>content: </p><p>hello world</p>,<br>editorOption: {<br>theme:’snow’<br>}<br>}<br>}<p></p>
+<p>工具栏设置</p>
+<p>modules:{<br>toolbar:[<br>[‘bold’, ‘italic’, ‘underline’, ‘strike’], //加粗，斜体，下划线，删除线<br>[‘blockquote’, ‘code-block’], //引用，代码块</p>
+<pre><code>    [{ &apos;header&apos;: 1 }, { &apos;header&apos;: 2 }],        // 标题，键值对的形式；1、2表示字体大小
+    [{ &apos;list&apos;: &apos;ordered&apos;}, { &apos;list&apos;: &apos;bullet&apos; }],     //列表
+    [{ &apos;script&apos;: &apos;sub&apos;}, { &apos;script&apos;: &apos;super&apos; }],   // 上下标
+    [{ &apos;indent&apos;: &apos;-1&apos;}, { &apos;indent&apos;: &apos;+1&apos; }],     // 缩进
+    [{ &apos;direction&apos;: &apos;rtl&apos; }],             // 文本方向
+
+
+    [{ &apos;size&apos;: [&apos;small&apos;, false, &apos;large&apos;, &apos;huge&apos;] }], // 字体大小
+    [{ &apos;header&apos;: [1, 2, 3, 4, 5, 6, false] }],     //几级标题
+
+
+    [{ &apos;color&apos;: [] }, { &apos;background&apos;: [] }],     // 字体颜色，字体背景颜色
+    [{ &apos;font&apos;: [] }],     //字体
+    [{ &apos;align&apos;: [] }],    //对齐方式
+
+
+    [&apos;clean&apos;],    //清除字体样式
+    [&apos;image&apos;,&apos;video&apos;]    //上传图片、上传视频
+
+  ]
+},
+theme:&apos;snow&apos;</code></pre><p>   }<br>}<br>图片推拽上传</p>
+<p>需要安装 quill-image-drop-module 模块，那么改一下imageDrop设置为true，你就可以把你电脑上的图片网上一坨就可以了。</p>
+<p>import { quillEditor } from ‘vue-quill-editor’<br>import * as Quill from ‘quill’ //引入编辑器<br>import { ImageDrop } from ‘quill-image-drop-module’;<br>Quill.register(‘modules/imageDrop’, ImageDrop);<br>export default {<br>name: ‘App’,<br>data(){<br>return{<br>editorOption:{<br>modules:{<br>imageDrop:true,<br>},<br>theme:’snow’<br>}<br>}<br>}</p>
+<p>那上传文件那你就不用想了，你也许想先把图片放上去，其实这个文件托上去就已经是个base64了，等你在前台读数的时候直接decode就好~</p>
+<p>图片调整大小ImageResize</p>
+<p>return{<br>editorOption:{<br>modules:{<br>　　　　　　　　imageResize: {}<br>},<br>theme:’snow’<br>}<br>}</p>
+<p>以上就是我对vue-quill-editor的认识，觉得对你有帮助的，给个推荐吧！</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/9426.html">http://yoursite.com/9426.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/VUE/"># VUE</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/52954.html">Centos7下 MariaDB 安装与常见问题</a>
+            
+            
+            <a class="next" rel="next" href="/15462.html">聊天室</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>使用Docker-compose搭建nginx-keepalived双机热备来实现高可用nginx集群 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">使用Docker-compose搭建nginx-keepalived双机热备来实现高可用nginx集群</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">July 9, 2019&nbsp;&nbsp;20:30:33</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/linux/">linux</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>其实负责转发的主机宕机概率很小，但是绝对不是没有，任何事都不是绝对，所谓的高可用架构就是体现在容灾机制上，如果主机宕机我们必须要做预案，万无一失才叫高可用架构，这里我们使用docker-compose来部署nginx-keepalived双机热备机制，vip主机可以进行漂移，这样主机挂掉了，还有备用机可以顶上</p>
+<pre><code>Keepalived是Linux下面实现VRRP备份路由的高可靠性运行件。基于Keepalived设计的服务模式能够真正做到主服务器和备份服务器故障时IP瞬间无缝交接。二者结合，可以构架出比较稳定的软件LB方案。
+
+简单点说，就是keepalived可以将下面这种简单的负载均衡模式</code></pre><p><img src="/images/20191018001744_76893.png" alt="1"></p>
+<pre><code>改造成下面这种高可用的架构</code></pre><p><img src="/images/20191018001813_79219.png" alt="1"></p>
+<p>  当有主机挂掉的时候，服务能瞬间切换到备用机</p>
+<pre><code>首先，安装docker和docker-compose按下不表，可以参考这篇文章，在centos7.6上利用docker-compose统一管理容器和服务   
+
+建立nginx_keepalived文件夹
+
+建立Dockerfile文件，这里我们使用alpine作为基础镜像，原因很简单，因为它体积小啊
+
+
+
+FROM nginx:1.13.5-alpine
+
+RUN apk update &amp;&amp; apk upgrade
+
+RUN apk add --no-cache bash curl ipvsadm iproute2 openrc keepalived &amp;&amp; 
+    rm -f /var/cache/apk/* /tmp/*
+
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+CMD [&quot;/entrypoint.sh&quot;]
+
+ 然后建立docker-compose.yml文件，这里我们仿照线上环境，部署一台主机和一台从机，分别安装nginx
+
+
+
+version: &quot;3&quot;
+services:
+  nginx_master:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./index-master.html:/usr/share/nginx/html/index.html
+      - ./favicon.ico:/usr/share/nginx/html/favicon.ico
+      - ./keepalived-master.conf:/etc/keepalived/keepalived.conf
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.2
+    cap_add: 
+      - NET_ADMIN
+  nginx_slave:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./index-slave.html:/usr/share/nginx/html/index.html
+      - ./favicon.ico:/usr/share/nginx/html/favicon.ico
+      - ./keepalived-slave.conf:/etc/keepalived/keepalived.conf
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.3
+    cap_add: 
+        - NET_ADMIN
+  proxy:
+    image: haproxy:1.7-alpine
+    ports:
+      - 8000:6301
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - static-network
+
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+ 随后，撰写nginx配置文件，keepalived-master.conf 这里由于我们没有后端tornado服务，所以使用虚拟代理服务
+
+
+
+vrrp_script chk_nginx {
+    script &quot;pidof nginx&quot;
+    interval 2
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 33
+    priority 200
+    advert_int 1
+    unicast_src_ip 172.20.128.2
+    unicast_peer {
+        172.20.128.3
+    }
+
+    authentication {
+        auth_type PASS
+        auth_pass letmein
+    }
+
+    virtual_ipaddress {
+        172.20.128.4/24 dev eth0
+    }
+
+    track_script {
+        chk_nginx
+    }
+}
+
+同理再复制一份从机的nginx配置keepalived-slave.conf
+
+
+
+vrrp_script chk_nginx {
+    script &quot;pidof nginx&quot;
+    interval 2
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface eth0
+    virtual_router_id 33
+    priority 100
+    advert_int 1
+    unicast_src_ip 172.20.128.3
+    unicast_peer {
+        172.20.128.2
+    }
+
+    authentication {
+        auth_type PASS
+        auth_pass letmein
+    }
+
+    virtual_ipaddress {
+        172.20.128.4/24 dev eth0
+    }
+
+    track_script {
+        chk_nginx
+    }
+}
+
+随后为后端服务做两个网页，一个主机index-master.html一个从机index-slave.html
+
+
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    &lt;title&gt;主机&lt;/title&gt;
+&lt;style&gt;
+
+#box{ 
+    margin: 0px auto;
+    font-family: &apos;Times New Roman&apos;, Times, serif; 
+    font-size: 30px;
+    font-style: initial;
+    color: aliceblue;
+    }
+
+body{
+    background-color: black
+}
+
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;div id=&quot;box&quot;&gt;
+
+        主机
+
+    &lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+
+ 从机的复制一份，将主机改成从机即可
+
+ 因为我们要模拟后台服务，所以需要haproxy.cfg配置文件
+
+
+
+global
+    log 127.0.0.1 local0
+    maxconn 4096
+    daemon
+    nbproc 4
+
+defaults
+    log 127.0.0.1 local3
+    mode http
+    option dontlognull
+    option redispatch
+    retries 2
+    maxconn 2000
+    balance roundrobin
+    timeout connect 5000ms
+    timeout client 5000ms
+    timeout server 5000ms
+
+frontend main
+    bind *:6301
+    default_backend webserver
+
+backend webserver
+    server ngxin_master 172.20.128.4:80 check inter 2000 rise 2 fall 5
+
+ 最后，撰写服务的shell脚本entrypoint.sh
+
+
+
+#!/bin/sh
+
+/usr/sbin/keepalived -n -l -D -f /etc/keepalived/keepalived.conf --dont-fork --log-console &amp;
+
+nginx -g &quot;daemon off;&quot;
+
+整个项目结构如下：</code></pre><p><img src="/images/20191018003404_17382.png" alt="1"></p>
+<p> 现在我们来启动容器集群，输入命令：docker-compose up</p>
+<pre><code>发现容器已经启动</code></pre><p><img src="/images/20191018003503_34389.png" alt="1"></p>
+<p>另外一个命令行，输入:docker ps</p>
+<p><img src="/images/20191018003541_88696.png" alt="1"></p>
+<p> 可以看到，后台分别三个容器正在启动，两台nginx反向代理8000端口的后台服务，访问 localhost:8000</p>
+<p>图片<br><img src="/images/20191018003725_19549.png" alt="1"></p>
+<pre><code>现在我们来模仿一下nginx主机宕机的情况
+
+
+
+docker pause nginx_keepalive_nginx_master_1</code></pre><p>   再次访问 localhost:8000</p>
+<pre><code>发现已经自动无缝切换到备用机，整个过程非常流畅</code></pre><p><img src="/images/20191018003915_99804.png" alt="1"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/14297.html">http://yoursite.com/14297.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/python/"># python</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/1.html"></a>
+            
+            
+            <a class="next" rel="next" href="/37938.html">python的自省机制</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>

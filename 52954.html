@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>Centos7下 MariaDB 安装与常见问题 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Centos7下 MariaDB 安装与常见问题</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 16, 2018&nbsp;&nbsp;23:45:38</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/技术/">技术</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="Centos7下-MariaDB-安装与常见问题"><a href="#Centos7下-MariaDB-安装与常见问题" class="headerlink" title="Centos7下 MariaDB 安装与常见问题"></a>Centos7下 MariaDB 安装与常见问题</h2><p>centos7下MariaDB安装与常见问题<br>MySQL 已经不再包含在 CentOS 7 的源中，而改用了 MariaDB，centos 7 中自带MariaDB<br>1、查看命令：rpm -qa | grep mariadb<br>命令解释：列出所有已经被安装的，名字中包含 mariadb字符串的 RPM包<br>（因为没有MySQL服务，因此没必要卸载。）</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%981.png" alt="1"></p>
+<p>2、如需卸载： rpm -e mariadb-*<br>若提示有依赖于这的安装包，那就强制卸载，不查检依赖：</p>
+<p>命令：rpm -e –nodeps mariadb-*<br>3、添加 yum 数据源<br>cd /etc/yum.repos.d/<br>vim /etc/yum.repos.d/MariaDB.repo </p>
+<p>选中版本后把红色框的文字拷贝到MariaDB.repo</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%982.png" alt="1"></p>
+<p>4、使用YUM 安装数据库 MariaDB<br>yum -y install MariaDB-client MariaDB-server MariaDB-devel<br>（参数 -y 是确认，不用提示，不输时安装过程中会出现提示需要选择）</p>
+<p>MariaDB-server：服务器端<br>MariaDB-client ：客户端，用于连接并操作Mysql服务器<br>MariaDB-devel：包含开发首要的文件和一些静态库，可以不安装，如果你想要编译其它MySQL客户端，例如Perl模块，则需要安装该RPM包</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%983.png" alt="1"></p>
+<p>备注：也可以每次安装一个包，单独安装<br>yum -y install MariaDB-client<br>yum -y install MariaDB-server<br>yum -y install MariaDB-devel</p>
+<p>5、启动数据库：service mysql start （或 /etc/init.d/mysql start）</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%984.png" alt="1"></p>
+<p>6、修改安全设置（Y/N可根据实际情况选择），如下：<br>为root用户设置密码</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%985.png" alt="1"></p>
+<p>删除匿名账号<br>取消root用户远程登录<br>删除test库和对test库的访问权限</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%986.png" alt="1"></p>
+<h1 id="注：若后续想修改安全设置，使用命令：mysql-secure-installation"><a href="#注：若后续想修改安全设置，使用命令：mysql-secure-installation" class="headerlink" title="注：若后续想修改安全设置，使用命令：mysql_secure_installation"></a>注：若后续想修改安全设置，使用命令：mysql_secure_installation</h1><p>7、检查版本<br>1）在终端下执行 ，以下几种形式都可以，结果基于你的系统信息<br>mysql -V<br>mysql –version<br>mysql –help | grep Distrib</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%987.png" alt="1"></p>
+<p>mysqladmin –version</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%988.png" alt="1"></p>
+<p>2）在mysql 里查看</p>
+<p>select version()；</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%989.png" alt="1"></p>
+<p>status；</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%9810.png" alt="1"></p>
+<p>查看安装了哪些包管理工具 rpm -qa</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%9811.png" alt="1"></p>
+<h1 id="温馨提醒：如果以上命令执行后未输入任何信息，说明你的Mysql未安装成功。"><a href="#温馨提醒：如果以上命令执行后未输入任何信息，说明你的Mysql未安装成功。" class="headerlink" title="温馨提醒：如果以上命令执行后未输入任何信息，说明你的Mysql未安装成功。"></a>温馨提醒：如果以上命令执行后未输入任何信息，说明你的Mysql未安装成功。</h1><p>8、登录数据库<br>命令：mysql -u root -p</p>
+<p>注意点：<br>1）密码根据安装时设置的输入，如未设置直接回车键进入即可<br>2）在输入密码时，密码是不会显示的，正确输入即可，密码不正确时会让你重新输入的</p>
+<p>输出 MariaDB [(none)]&gt;提示符，这说明已经成功连接到Mysql服务器上，接下来可以在 mysql&gt; 提示符执行SQL命令</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%9812.png" alt="1"></p>
+<p>思考2个问题：<br>a、如果想在Windows下访问Linux下的mysql数据库，需要如何操作呢？<br>b、如果修改过mysql的端口号，又该如何访问?</p>
+<p>公布答案：<br>问题a<br>（1）以管理员身份运行cmd<br>（2）mysql -hXX.XX.XX.XX -uroot -p，回车输入密码</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%9813.png" alt="1"></p>
+<p>问题b<br>mysql -hXX.XX.XX.XX -P3308 -uroot -p，回车输入密码<br>（mysql默认端口是3306）</p>
+<p>9、测试功能：创建数据库</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%9814.png" alt="1"></p>
+<p>10、显示已有数据库<br>SHOW DATABASES;</p>
+<p><img src="/images/centos7%E4%B8%8BMariaDB%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%9815.png" alt="1"></p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><p>1、未登录mysql，在终端输入mysql中的命令查看版本<br><img src="/images/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%981.png" alt="1"></p>
+<p>2、若服务启动失败，有可能是端口未配置<br>进入安装目录，有个err文件，可以看到端口号<br><img src="/images/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%982.png" alt="1"></p>
+<p>阿里云服务器，直接在安全配置里配上3306端口号就OK了<br>在虚拟机下碰到这个问题，可用命令：vi /etc/sysconfig/firewalld （版本7以下，防火墙是 iptables）,重启生效 /etc/init.d/firewalld restart<br>增加：-A INPUT -p tcp -m state –state NEW -m tcp –dport 3306 -j ACCEPT<br>3、数据库登录失败<br>mysql -u root -p密码<br>解决办法：尝试不输密码直接登录<br><img src="/images/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%983.png" alt="1"></p>
+<p>4、进入数据库操作问题<br>42000错误就是SQL语法问题，根据提示更正即可<br><img src="/images/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%984.png" alt="1"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/52954.html">http://yoursite.com/52954.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/技术/"># 技术</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/8136.html">linux终端操作</a>
+            
+            
+            <a class="next" rel="next" href="/9426.html">Vue基于vue-quill-editor富文本编辑器使用心得</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>

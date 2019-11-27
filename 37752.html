@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>Vuex 状态管理的工作原理 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Vuex 状态管理的工作原理</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">May 28, 2018&nbsp;&nbsp;20:30:45</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/VUE/">VUE</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="为什么要使用-Vuex"><a href="#为什么要使用-Vuex" class="headerlink" title="为什么要使用 Vuex"></a>为什么要使用 Vuex</h2><p>当我们使用 Vue.js 来开发一个单页应用时，经常会遇到一些组件间共享的数据或状态，或是需要通过 props 深层传递的一些数据。在应用规模较小的时候，我们会使用 props、事件等常用的父子组件的组件间通信方法，或者是通过事件总线来进行任意两个组件的通信。但是当应用逐渐复杂后，问题就开始出现了，这样的通信方式会导致数据流异常地混乱。</p>
+<p><img src="/images/ABCD.png" alt="1"></p>
+<p>这个时候，我们就需要用到我们的状态管理工具 Vuex 了。Vuex 是一个专门为 Vue.js 框架设计的、专门用来对于 Vue.js 应用进行状态管理的库。它借鉴了 Flux、redux 的基本思想，将状态抽离到全局，形成一个 Store。因为 Vuex 内部采用了 new Vue 来将 Store 内的数据进行「响应式化」，所以 Vuex 是一款利用 Vue 内部机制的库，与 Vue 高度契合，与 Vue 搭配使用显得更加简单高效，但缺点是不能与其他的框架（如 react）配合使用。</p>
+<p>本节将简单介绍 Vuex 最核心的内部机制，起个抛砖引玉的作用，想了解更多细节可以参考笔者 <a href="https://github.com/answershuto" target="_blank" rel="noopener">Github</a> 上的另一篇文章 <a href="https://github.com/answershuto/learnVue/blob/master/docs/Vuex%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90.MarkDown" target="_blank" rel="noopener">《Vuex源码解析》</a>或者直接阅读 <a href="https://github.com/vuejs/vuex" target="_blank" rel="noopener">Vuex源码</a>。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Vue.js 提供了一个 <code>Vue.use</code> 的方法来安装插件，内部会调用插件提供的 <code>install</code> 方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Vue.use(Vuex);</span><br></pre></td></tr></table></figure>
+
+<p>所以我们的插件需要提供一个 <code>install</code> 方法来安装。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let Vue;</span><br><span class="line"></span><br><span class="line">export default install (_Vue) &#123;</span><br><span class="line">    Vue.mixin(&#123; beforeCreate: vuexInit &#125;);</span><br><span class="line">    Vue = _Vue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们采用 <code>Vue.mixin</code> 方法将 <code>vuexInit</code> 方法混淆进 <code>beforeCreate</code> 钩子中，并用 <code>Vue</code> 保存 Vue 对象。那么 <code>vuexInit</code> 究竟实现了什么呢？</p>
+<p>我们知道，在使用 Vuex 的时候，我们需要将 <code>store</code> 传入到 Vue 实例中去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/*将store放入Vue创建时的option中*/</span><br><span class="line">new Vue(&#123;</span><br><span class="line">    el: &apos;#app&apos;,</span><br><span class="line">    store</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>但是我们却在每一个 vm 中都可以访问该 <code>store</code>，这个就需要靠 <code>vuexInit</code> 了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function vuexInit () &#123;</span><br><span class="line">    const options = this.$options;</span><br><span class="line">    if (options.store) &#123;</span><br><span class="line">        this.$store = options.store;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        this.$store = options.parent.$store;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为之前已经用<code>Vue.mixin</code> 方法将 <code>vuexInit</code> 方法混淆进 <code>beforeCreate</code> 钩子中，所以每一个 vm 实例都会调用 <code>vuexInit</code> 方法。</p>
+<p>如果是根节点（<code>$options</code>中存在 <code>store</code> 说明是根节点），则直接将 <code>options.store</code> 赋值给 <code>this.$store</code>。否则则说明不是根节点，从父节点的 <code>$store</code> 中获取。</p>
+<p>通过这步的操作，我们已经可以在任意一个 vm 中通过 <code>this.$store</code> 来访问 <code>Store</code> 的实例啦～</p>
+<h2 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h2><h3 id="数据的响应式化"><a href="#数据的响应式化" class="headerlink" title="数据的响应式化"></a>数据的响应式化</h3><p>首先我们需要在 <code>Store</code> 的构造函数中对 <code>state</code> 进行「响应式化」。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">constructor () &#123;</span><br><span class="line">    this._vm = new Vue(&#123;</span><br><span class="line">        data: &#123;</span><br><span class="line">            $$state: this.state</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>熟悉「响应式」的同学肯定知道，这个步骤以后，<code>state</code> 会将需要的依赖收集在 <code>Dep</code> 中，在被修改时更新对应视图。我们来看一个小例子。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">let globalData = &#123;</span><br><span class="line">    d: &apos;hello world&apos;</span><br><span class="line">&#125;;</span><br><span class="line">new Vue(&#123;</span><br><span class="line">    data () &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            $$state: &#123;</span><br><span class="line">                globalData</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">/* modify */</span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">    globalData.d = &apos;hi~&apos;;</span><br><span class="line">&#125;, 1000);</span><br><span class="line"></span><br><span class="line">Vue.prototype.globalData = globalData;</span><br></pre></td></tr></table></figure>
+
+<p>任意模板中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;&#123;&#123;globalData.d&#125;&#125;&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码在全局有一个 <code>globalData</code>，它被传入一个 <code>Vue</code> 对象的 <code>data</code> 中，之后在任意 Vue 模板中对该变量进行展示，因为此时 <code>globalData</code> 已经在 Vue 的 <code>prototype</code> 上了所以直接通过 <code>this.prototype</code> 访问，也就是在模板中的 <code></code>。此时，<code>setTimeout</code> 在 1s 之后将 <code>globalData.d</code> 进行修改，我们发现模板中的 <code>globalData.d</code> 发生了变化。其实上述部分就是 Vuex 依赖 Vue 核心实现数据的“响应式化”。</p>
+<p>讲完了 Vuex 最核心的通过 Vue 进行数据的「响应式化」，接下来我们再来介绍两个 <code>Store</code> 的 API。</p>
+<h3 id="commit"><a href="#commit" class="headerlink" title="commit"></a>commit</h3><p>首先是 <code>commit</code> 方法，我们知道 <code>commit</code> 方法是用来触发 <code>mutation</code> 的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">commit (type, payload, _options) &#123;</span><br><span class="line">    const entry = this._mutations[type];</span><br><span class="line">    entry.forEach(function commitIterator (handler) &#123;</span><br><span class="line">        handler(payload);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从 <code>_mutations</code> 中取出对应的 mutation，循环执行其中的每一个 mutation。</p>
+<h3 id="dispatch"><a href="#dispatch" class="headerlink" title="dispatch"></a>dispatch</h3><p><code>dispatch</code> 同样道理，用于触发 action，可以包含异步状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dispatch (type, payload) &#123;</span><br><span class="line">    const entry = this._actions[type];</span><br><span class="line"></span><br><span class="line">    return entry.length &gt; 1</span><br><span class="line">    ? Promise.all(entry.map(handler =&gt; handler(payload)))</span><br><span class="line">    : entry[0](payload);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样的，取出 <code>_actions</code> 中的所有对应 action，将其执行，如果有多个则用 <code>Promise.all</code> 进行包装。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>理解 Vuex 的核心在于理解其如何与 Vue 本身结合，如何利用 Vue 的响应式机制来实现核心 Store 的「响应式化」。</p>
+<p>Vuex 本身代码不多且设计优雅，非常值得一读，想阅读源码的同学请看<a href="https://github.com/vuejs/vuex" target="_blank" rel="noopener">Vuex源码</a>。</p>
+<p>注：本节代码参考<a href="https://github.com/answershuto/VueDemo/blob/master/%E3%80%8AVuex%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E3%80%8B.js" target="_blank" rel="noopener">《Vuex状态管理的工作原理》</a>。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/37752.html">http://yoursite.com/37752.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/VUE/"># VUE</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/15462.html">聊天室</a>
+            
+            
+            <a class="next" rel="next" href="/19654.html">GitBook</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>

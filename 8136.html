@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+
+<title>linux终端操作 | Aaron&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/1230.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Aaron&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Aaron&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">类别</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/about">关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">linux终端操作</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Aaron</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">June 22, 2018&nbsp;&nbsp;23:35:33</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Linux/">Linux</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <ol>
+<li>ctr + alt + t 打开新的终端窗口</li>
+<li>ctr + shift + + 终端窗口字体放大</li>
+<li>ctr + - 终端窗口字体缩小</li>
+<li>ls : 查看目录下的文件信息</li>
+<li>pwd: 查看目录所对应路径</li>
+<li>touch: 创建文件</li>
+<li>mkdir: 创建文件夹</li>
+<li>cd: 切换目录</li>
+<li>1 cd .. 切换到上一级目录</li>
+<li>2 cd 目录名： 切换到指定目录</li>
+<li>3 cd -: 切换到上一次路径</li>
+<li>4 cd ~: 切换到用户的家目录 /home/python</li>
+<li>5 cd .: 切换到当前目录</li>
+<li>rmdir: 删除空文件夹，注意点:只能是空文件夹ing</li>
+</ol>
+<p>sudo -s 获取最顶级的root权限。输入密码<br>ls -lh (-lh) 更人性化的查看文档<br>clear 清空<br>cd- 返回一次的目录<br>tree 查看目录谁属于谁的<br>cal 查看当月日历<br>cal -y 查看当年日历<br>date 查看日期<br>history 查看敲的代码的个数<br>mv 拷贝文件<br>rm –help (–help) 查看指令是干嘛的<br>man 查看说明 f翻页，b上一页 q退出<br>mkdir ./bbb/aa/cc -p 多层嵌套创建的时候在后面加-p<br>rm 1.txt -i 删除空文件不能删除文件夹 y是确认 n是否</p>
+<p>gedit 1.txt 打开文件进行操作写入<br>cat 3.txt 查看文件中的信息<br>more 1.txt 分页查看文档（比较好看的类型） 空格下一页 ，回车一行一行查看 q退出</p>
+<p>重定向（&gt;） ：ls /bin &gt; ./4.txt 把bin文件 重定到 4.txt 查看<br>(&gt;&gt;) : tree 1.txt 4.txt &gt;&gt; 3.txt 追加、合并文件</p>
+<p>ls /bin | more 管道（|）查看文档<br>ln -s 1.txt 1-s.txt 创建软连接，快捷方式<br>ln 1.txt 1-h.txt 创建硬链接 ，链接全部数据<br>grep “^d” ./1.txt grep “j$” ./1.txt 搜索文档里面的数据后面加-n显示行数<br>-i 不区分大小写 -v 取反</p>
+<p>gz 是z<br>tar -zcvf test.tar.gz *.txt 压缩<br>tar -zxvf ./test.tar.gz 解压<br>tar -zxvf name.tar.gz -C ./aa 想要解压到指定文件夹时 加-C(大C).</p>
+<p>bz2 是j<br>tar -jcvf name.tar.bz2 *.txt 压缩<br>tar -jxvf name.tar.bz2 解压<br>tar -jxvf name.tar.bz2 -C ./</p>
+<p>zip：<br>zip zip.zip *.txt 压缩<br>unzip zip.zip ./ 解压<br>unzip -d ./cc zip.zip 解压到指定目录</p>
+<p>pwd:使用pwd命令可以显示当前的工作目录，该命令很简单，直接输入pwd即可，后面不带参数。<br>cd:切换工作目录<br>ls:查看文件信息<br>ls是英文单词list的简写，其功能为列出目录的内容，是用户最常用的命令之一，它类似于DOS下的dir命令<br>Linux文件或者目录名称最长可以有265个字符，“.”代表当前目录，“..”代表上一级目录，以“.”开头的文件为隐藏文件，需要用 -a 参数才能显示。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Aaron</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://yoursite.com/8136.html">http://yoursite.com/8136.html</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY<strong>?</strong></strong></span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/linux/"># linux</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/1988.html">Websocket</a>
+            
+            
+            <a class="next" rel="next" href="/52954.html">Centos7下 MariaDB 安装与常见问题</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Aaron | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+    <script type="text/javascript" src="/js/click.js"></script>
+    <script type="text/javascript" src="/js/clickl.js"></script>
+</body>
+</html>
